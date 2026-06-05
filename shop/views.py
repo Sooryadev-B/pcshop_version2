@@ -72,8 +72,8 @@ def builder(request):
 @login_required
 def dashboard(request):
     return render(request, 'shop/dashboard.html', {
-        'orders': [],
-        'builds': [],
+        'order_history': [],
+        'saved_builds': [],
         'wishlist': [],
     })
 
