@@ -1,0 +1,94 @@
+<footer class="mt-5 border-top" style="background: var(--bg-secondary); border-color: rgba(255, 255, 255, 0.05) !important;">
+    <!-- RGB glowing border accent line -->
+    <div style="height: 3px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-pink), var(--accent-blue)); background-size: 300% 100%; animation: rgbGradientMove 5s linear infinite;"></div>
+
+    <div class="container py-5">
+        <div class="row g-4 justify-content-between">
+            <!-- Brand Column -->
+            <div class="col-lg-4 col-md-6">
+                <a class="d-flex align-items-center font-heading text-white fw-bold mb-3 text-decoration-none transition" style="letter-spacing: 2px; font-size: 1.3rem;" href="{% url 'shop:home' %}" title="Overclock PC Shop">
+                    <i class="bi bi-hexagon-fill text-info me-2" style="filter: drop-shadow(var(--glow-blue));"></i>
+                    OVER<span class="text-pink">CLOCK</span>
+                </a>
+                <p class="text-gray mb-4" style="font-size: 0.9rem; line-height: 1.6;">
+                    The premium neural gateway for high-performance custom liquid loop gaming desktops, elite GPUs, processors, and RGB enthusiast setups.
+                </p>
+                <nav class="d-flex gap-3 fs-5" aria-label="Social media links">
+                    <a href="#" class="text-secondary text-hover-info transition" title="Discord" aria-label="Discord"><i class="bi bi-discord text-info"></i></a>
+                    <a href="#" class="text-secondary text-hover-info transition" title="YouTube" aria-label="YouTube"><i class="bi bi-youtube text-danger"></i></a>
+                    <a href="#" class="text-secondary text-hover-info transition" title="Twitter" aria-label="Twitter"><i class="bi bi-twitter text-info"></i></a>
+                    <a href="#" class="text-secondary text-hover-info transition" title="Instagram" aria-label="Instagram"><i class="bi bi-instagram text-pink"></i></a>
+                </nav>
+            </div>
+
+            <!-- Shop Links -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="text-white font-heading mb-3" style="font-size: 0.9rem;">CATALOG</h6>
+                <nav class="list-unstyled d-flex flex-column gap-2" style="font-size: 0.9rem;" aria-label="Catalog navigation">
+                    <a href="{% url 'shop:catalog' %}?category=prebuilt" class="text-secondary text-decoration-none text-hover-white transition">Prebuilt Desktops</a>
+                    <a href="{% url 'shop:catalog' %}?category=gpu" class="text-secondary text-decoration-none text-hover-white transition">Graphics Cards</a>
+                    <a href="{% url 'shop:catalog' %}?category=cpu" class="text-secondary text-decoration-none text-hover-white transition">Processors</a>
+                    <a href="{% url 'shop:catalog' %}?category=ram" class="text-secondary text-decoration-none text-hover-white transition">System RAM</a>
+                </nav>
+            </div>
+
+            <!-- Support Links -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="text-white font-heading mb-3" style="font-size: 0.9rem;">STATION INFO</h6>
+                <nav class="list-unstyled d-flex flex-column gap-2" style="font-size: 0.9rem;" aria-label="Support navigation">
+                    <a href="{% url 'shop:builder' %}" class="text-secondary text-decoration-none text-hover-white transition">Custom Builder</a>
+                    <a href="{% url 'shop:dashboard' %}" class="text-secondary text-decoration-none text-hover-white transition">Saved Configs</a>
+                    <a href="{% url 'shop:dashboard' %}" class="text-secondary text-decoration-none text-hover-white transition">Order Trackers</a>
+                    <a href="{% url 'shop:feedback' %}" class="text-secondary text-decoration-none text-hover-white transition">Client Feedback</a>
+                    <a href="#" class="text-secondary text-decoration-none text-hover-white transition">Warranty & Support</a>
+                    {% if user.is_staff %}
+                    <a href="{% url 'portal:dashboard' %}" class="text-decoration-none transition d-inline-flex align-items-center gap-1 mt-1" style="color: var(--accent-blue); font-size: 0.85rem;" title="Admin Portal">
+                        <i class="bi bi-shield-lock-fill" style="filter: drop-shadow(var(--glow-blue));"></i> ADMIN PORTAL
+                    </a>
+                    {% else %}
+                    <a href="{% url 'portal:login' %}" class="text-decoration-none transition d-inline-flex align-items-center gap-1 mt-1" style="color: rgba(99,179,237,0.5); font-size: 0.85rem;" title="Staff Login">
+                        <i class="bi bi-shield-lock"></i> ADMIN LOGIN
+                    </a>
+                    {% endif %}
+                </nav>
+            </div>
+
+            <!-- Newsletter Signup -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="text-white font-heading mb-3" style="font-size: 0.9rem;">NEURAL BROADCAST</h6>
+                <p class="text-gray mb-3" style="font-size: 0.85rem;">
+                    Register your frequency to receive notifications about GPU restocks and flash promotions.
+                </p>
+                <form onsubmit="event.preventDefault(); alert('Broadcasting frequency locked in.');" class="d-flex flex-column gap-2" role="search">
+                    <input type="email" class="form-control form-glass text-white border-secondary transition" placeholder="Enter cyber-mail..." required style="font-size: 0.85rem;" aria-label="Email for newsletter">
+                    <button type="submit" class="btn btn-cyber btn-cyber-purple font-subheading py-2 transition" style="font-size: 0.9rem;">CONNECT FEED</button>
+                </form>
+            </div>
+        </div>
+
+        <hr class="my-4 border-secondary opacity-25">
+
+        <!-- Lower Footer -->
+        <div class="row align-items-center justify-content-between g-3" style="font-size: 0.8rem;">
+            <div class="col-md-6 text-center text-md-start text-secondary">
+                &copy; 2026 OVERCLOCK PC SHOP. ALL CHANNELS SECURED. DESIGNED FOR CYBERPUNK ENTHUSIASTS.
+            </div>
+            <div class="col-md-6 text-center text-md-end d-flex justify-content-center justify-content-md-end gap-3 text-secondary fs-5">
+                <i class="bi bi-credit-card-2-front transition" title="Credit Card" aria-label="Credit card payment accepted"></i>
+                <i class="bi bi-wallet2 transition" title="Crypto Accepted" aria-label="Cryptocurrency payment accepted"></i>
+                <i class="bi bi-paypal transition" title="PayPal Checkout" aria-label="PayPal payment accepted"></i>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .text-hover-white:hover {
+            color: #fff !important;
+            transition: color 0.2s var(--transition-smooth);
+        }
+        .text-hover-info:hover i {
+            color: var(--accent-blue) !important;
+            transition: color 0.2s var(--transition-smooth);
+        }
+    </style>
+</footer>

@@ -1,0 +1,11 @@
+django==5.1.4                    # or 6.0.6 if you want latest
+gunicorn==23.0.0                 # or 26.0.0
+whitenoise==6.8.2
+pillow==11.1.0
+python-dotenv==1.0.1
+requests==2.32.3
+psycopg2-binary==2.9.12
+dj-database-url==2.1.0
+PyJWT==2.10.1
+pytz==2024.2
+sqlparse==0.5.3

@@ -1,0 +1,118 @@
+{% extends 'portal/base_admin.html' %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-3 border-bottom border-secondary">
+    <div>
+        <span class="badge-cyber badge-cyber-pink mb-1 d-inline-block">ADMIN PANEL</span>
+        <h2 class="font-heading text-white fw-bold mb-0">Control Center</h2>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-xl-3 col-md-6">
+        <div class="rgb-card h-100">
+            <div class="rgb-card-inner d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3);">
+                    <i class="bi bi-box-seam text-info fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted font-subheading d-block" style="font-size: 0.75rem;">PRODUCTS</span>
+                    <span class="font-heading text-white fw-bold fs-4">{{ product_count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="rgb-card h-100">
+            <div class="rgb-card-inner d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3);">
+                    <i class="bi bi-people fs-4" style="color: var(--accent-purple);"></i>
+                </div>
+                <div>
+                    <span class="text-muted font-subheading d-block" style="font-size: 0.75rem;">USERS</span>
+                    <span class="font-heading text-white fw-bold fs-4">{{ user_count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="rgb-card h-100">
+            <div class="rgb-card-inner d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(255,0,255,0.1); border: 1px solid rgba(255,0,255,0.3);">
+                    <i class="bi bi-star fs-4" style="color: var(--accent-pink);"></i>
+                </div>
+                <div>
+                    <span class="text-muted font-subheading d-block" style="font-size: 0.75rem;">REVIEWS</span>
+                    <span class="font-heading text-white fw-bold fs-4">{{ review_count }}</span>
+                    {% if pending_reviews %}<small class="text-warning">{{ pending_reviews }} pending</small>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="rgb-card h-100">
+            <div class="rgb-card-inner d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3);">
+                    <i class="bi bi-chat-dots text-warning fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted font-subheading d-block" style="font-size: 0.75rem;">FEEDBACK</span>
+                    <span class="font-heading text-white fw-bold fs-4">{{ feedback_count }}</span>
+                    {% if new_feedback %}<small class="text-info">{{ new_feedback }} new</small>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="glass-panel p-4 border-secondary h-100">
+            <h5 class="font-heading text-white mb-3" style="font-size: 0.9rem;"><i class="bi bi-star text-pink me-2"></i>RECENT REVIEWS</h5>
+            {% for review in recent_reviews %}
+            <div class="border-bottom border-secondary py-2" style="border-color: rgba(255,255,255,0.04)!important;">
+                <div class="d-flex justify-content-between">
+                    <span class="text-white font-subheading" style="font-size: 0.85rem;">{{ review.title|truncatechars:30 }}</span>
+                    <span class="text-warning"><i class="bi bi-star-fill"></i> {{ review.rating }}</span>
+                </div>
+                <small class="text-muted">{{ review.product.name|truncatechars:25 }} — {{ review.author_name }}</small>
+            </div>
+            {% empty %}
+            <p class="text-muted font-subheading">No reviews yet.</p>
+            {% endfor %}
+            <a href="{% url 'portal:review_list' %}" class="btn btn-sm btn-outline-info mt-3 font-subheading">Manage Reviews</a>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-panel p-4 border-secondary h-100">
+            <h5 class="font-heading text-white mb-3" style="font-size: 0.9rem;"><i class="bi bi-chat-dots text-info me-2"></i>RECENT FEEDBACK</h5>
+            {% for fb in recent_feedback %}
+            <div class="border-bottom border-secondary py-2" style="border-color: rgba(255,255,255,0.04)!important;">
+                <span class="text-white font-subheading d-block" style="font-size: 0.85rem;">{{ fb.subject|truncatechars:35 }}</span>
+                <small class="text-muted">{{ fb.name }} — <span class="text-{% if fb.status == 'new' %}info{% elif fb.status == 'resolved' %}success{% else %}secondary{% endif %}">{{ fb.status|upper }}</span></small>
+            </div>
+            {% empty %}
+            <p class="text-muted font-subheading">No feedback yet.</p>
+            {% endfor %}
+            <a href="{% url 'portal:feedback_list' %}" class="btn btn-sm btn-outline-info mt-3 font-subheading">Manage Feedback</a>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-panel p-4 border-secondary h-100">
+            <h5 class="font-heading text-white mb-3" style="font-size: 0.9rem;"><i class="bi bi-box-seam text-warning me-2"></i>RECENT PRODUCTS</h5>
+            {% for product in recent_products %}
+            <div class="border-bottom border-secondary py-2 d-flex justify-content-between align-items-center" style="border-color: rgba(255,255,255,0.04)!important;">
+                <div>
+                    <span class="text-white font-subheading d-block" style="font-size: 0.85rem;">{{ product.name|truncatechars:28 }}</span>
+                    <small class="text-muted">${{ product.price }} · Stock: {{ product.stock }}</small>
+                </div>
+                <a href="{% url 'portal:product_edit' product.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+            </div>
+            {% empty %}
+            <p class="text-muted font-subheading">No products yet.</p>
+            {% endfor %}
+            <a href="{% url 'portal:product_add' %}" class="btn btn-sm btn-outline-info mt-3 font-subheading">Add Product</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
