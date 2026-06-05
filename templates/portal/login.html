@@ -1,0 +1,36 @@
+{% extends 'portal/base_admin.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-panel p-5 border-secondary">
+                <div class="text-center mb-4">
+                    <span class="badge-cyber badge-cyber-pink mb-2 d-inline-block">RESTRICTED ACCESS</span>
+                    <h2 class="font-heading text-white fw-bold">Admin Control</h2>
+                    <p class="text-muted font-subheading">Staff credentials required</p>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label text-secondary font-subheading">USERNAME</label>
+                        <input type="text" name="username" class="form-control form-glass bg-transparent border-secondary text-white" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary font-subheading">PASSWORD</label>
+                        <input type="password" name="password" class="form-control form-glass bg-transparent border-secondary text-white" required>
+                    </div>
+                    <button type="submit" class="btn btn-cyber btn-cyber-purple w-100 font-subheading py-2">
+                        <i class="bi bi-shield-lock me-1"></i> AUTHENTICATE
+                    </button>
+                </form>
+                <div class="text-center mt-4">
+                    <a href="{{ pcshop_url }}" class="text-info font-subheading text-decoration-none" style="font-size: 0.85rem;">
+                        <i class="bi bi-arrow-left me-1"></i> Back to PC Shop
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

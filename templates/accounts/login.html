@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connect Node | Overclock PC Shop{% endblock %}
+
+{% block content %}
+<div class="container py-5 d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 400px);">
+    <div class="w-100" style="max-width: 480px;">
+        
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-1 text-uppercase font-subheading justify-content-center" style="font-size: 0.8rem;">
+                <li class="breadcrumb-item"><a href="{% url 'shop:home' %}" class="text-secondary text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active text-info" aria-current="page">Connect Node</li>
+            </ol>
+        </nav>
+
+        <!-- Login Glass Panel -->
+        <div class="glass-panel p-4 p-md-5 border-cyan" style="background: rgba(21, 21, 29, 0.85); box-shadow: var(--glow-blue);">
+            <div class="text-center mb-4">
+                <i class="bi bi-shield-lock-fill text-info fs-1 mb-2 d-inline-block" style="filter: drop-shadow(var(--glow-blue));"></i>
+                <h3 class="font-heading text-white fw-bold mb-1">CONNECT_NODE_01</h3>
+                <p class="text-muted font-subheading mb-0" style="font-size: 0.85rem;">INITIALIZE SYSTEM AUTHENTICATION PROTOCOL</p>
+            </div>
+
+            <!-- Messages Block -->
+            {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} bg-dark text-white border-{% if message.tags == 'error' %}danger{% else %}info{% endif %} d-flex align-items-center" role="alert" style="font-size: 0.85rem;">
+                            <i class="bi {% if message.tags == 'error' %}bi-exclamation-triangle-fill text-danger{% else %}bi-info-circle-fill text-info{% endif %} me-2"></i>
+                            <div>{{ message }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Login Form -->
+            <form method="POST" action="{% url 'accounts:login' %}" novalidate>
+                {% csrf_token %}
+                
+                <!-- Non-field Errors -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger bg-dark text-white border-danger mb-4" role="alert" style="font-size: 0.85rem;">
+                        {% for error in form.non_field_errors %}
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                                <div>{{ error }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Username Field -->
+                <div class="mb-4">
+                    <label for="id_username" class="form-label font-subheading text-white mb-2" style="font-size: 0.9rem;">NODE USERNAME</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-secondary text-secondary" style="border-right: none; background: rgba(255,255,255,0.02) !important;"><i class="bi bi-person"></i></span>
+                        <input type="text" name="username" autofocus required id="id_username" 
+                               class="form-control form-glass text-white {% if form.username.errors %}is-invalid{% endif %}" 
+                               placeholder="Enter node username" 
+                               style="border-left: none; background: rgba(255, 255, 255, 0.03); border-color: rgba(0, 229, 255, 0.2); border-radius: 0 8px 8px 0;"
+                               value="{{ form.username.value|default:'' }}">
+                    </div>
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback d-block mt-1 font-subheading text-danger" style="font-size: 0.8rem;">
+                            {% for error in form.username.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password Field -->
+                <div class="mb-4">
+                    <label for="id_password" class="form-label font-subheading text-white mb-2" style="font-size: 0.9rem;">DECRYPT PASSKEY</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-secondary text-secondary" style="border-right: none; background: rgba(255,255,255,0.02) !important;"><i class="bi bi-key"></i></span>
+                        <input type="password" name="password" required id="id_password" 
+                               class="form-control form-glass text-white {% if form.password.errors %}is-invalid{% endif %}" 
+                               placeholder="••••••••" 
+                               style="border-left: none; background: rgba(255, 255, 255, 0.03); border-color: rgba(0, 229, 255, 0.2); border-radius: 0 8px 8px 0;">
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback d-block mt-1 font-subheading text-danger" style="font-size: 0.8rem;">
+                            {% for error in form.password.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-cyber py-3 font-subheading fw-bold">
+                        ESTABLISH CONNECTION <i class="bi bi-wifi ms-1 text-info"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-top border-secondary">
+                <span class="text-muted font-subheading d-block mb-2" style="font-size: 0.85rem;">NEW OPERATIVE?</span>
+                <a href="{% url 'accounts:register' %}" class="btn btn-outline-info btn-sm font-subheading text-decoration-none px-4 py-2 transition" style="border-radius: 6px;">
+                    INITIALIZE NEW NODE
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

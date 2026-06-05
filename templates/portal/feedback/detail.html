@@ -1,0 +1,35 @@
+{% extends 'portal/base_admin.html' %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary">
+    <h2 class="font-heading text-white fw-bold mb-0">Feedback Detail</h2>
+    <a href="{% url 'portal:feedback_list' %}" class="btn btn-outline-secondary font-subheading">Back</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="glass-panel p-4 border-secondary">
+            <h3 class="font-heading text-white mb-1">{{ feedback.subject }}</h3>
+            <p class="text-muted font-subheading mb-4">
+                From <strong class="text-white">{{ feedback.name }}</strong> ({{ feedback.email }})
+                — {{ feedback.created_at|date:"F d, Y \a\t g:i A" }}
+            </p>
+            <div class="p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                <p class="text-white mb-0" style="white-space: pre-wrap;">{{ feedback.message }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-panel p-4 border-secondary">
+            <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;">UPDATE STATUS</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.status }}
+                </div>
+                <button type="submit" class="btn btn-cyber btn-cyber-purple w-100 font-subheading">Update Status</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

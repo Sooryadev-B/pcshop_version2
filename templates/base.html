@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Overclock PC Shop - Premium custom built gaming PCs, high-end hardware configurations, and cyberpunk gaming setups.">
+    <meta name="theme-color" content="#0b0b0f">
+    <title>{% block title %}{{ title|default:"Overclock PC Shop | Premium Gaming Desktops" }}{% endblock %}</title>
+    
+    <!-- Google Fonts: Orbitron, Rajdhani, Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Custom Cyber Theme CSS -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Accessibility: Skip to main content link -->
+    <a href="#main-content" class="skip-to-main visually-hidden-focusable">Skip to main content</a>
+
+    <!-- Premium Navbar Header -->
+    {% include 'partials/navbar.html' %}
+
+    <!-- Main Content Injection -->
+    <main class="py-4 fade-in" style="min-height: calc(100vh - 400px);" id="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Floating Custom PC Builder CTA Button -->
+    <div class="floating-cta" role="region" aria-label="Quick actions">
+        <a href="{% url 'shop:builder' %}" class="btn btn-cyber btn-cyber-pink py-3 px-4 rounded-circle d-flex align-items-center justify-content-center shadow-lg transition" style="width: 65px; height: 65px;" title="Launch Custom PC Builder" id="floating-builder-cta" aria-label="Open PC builder in new section">
+            <i class="bi bi-cpu fs-3"></i>
+        </a>
+    </div>
+
+    <!-- Cyberspace Footer -->
+    {% include 'partials/footer.html' %}
+
+    <!-- Bootstrap 5 Bundle JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <!-- Global Main JS -->
+    <script src="{% static 'js/app.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+
+    <!-- Schema.org structured data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Overclock PC Shop",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/",
+        "description": "Premium custom built gaming PCs and high-end hardware configurations"
+    }
+    </script>
+</body>
+</html>

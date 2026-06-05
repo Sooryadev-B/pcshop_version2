@@ -1,0 +1,93 @@
+<nav class="navbar navbar-expand-lg sticky-top border-bottom" style="background: rgba(11, 11, 15, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-color: rgba(255, 255, 255, 0.05) !important; z-index: 1050;">
+    <div class="container py-2">
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center font-heading text-white fw-bold transition" href="{% url 'shop:home' %}" style="letter-spacing: 2px; font-size: 1.4rem;" title="Overclock PC Shop - Home">
+            <i class="bi bi-hexagon-fill text-info me-2 animated-float" style="filter: drop-shadow(var(--glow-blue));"></i>
+            OVER<span class="text-pink">CLOCK</span>
+        </a>
+
+        <!-- Responsive Toggle Button -->
+        <button class="navbar-toggler border-0 text-white transition" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Mobile Search Bar (Only visible on screens smaller than lg) -->
+            <div class="d-lg-none w-100 my-3 px-2">
+                <form class="position-relative d-flex align-items-center" action="{% url 'shop:catalog' %}" method="GET" role="search">
+                    <input class="form-control form-glass bg-transparent border-secondary text-white py-2 px-3 pe-5 w-100" type="search" placeholder="Search specs..." aria-label="Search products" name="q" value="{{ search_query|default:'' }}" style="font-size: 0.95rem;">
+                    <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-info border-0 p-0 pe-3 transition" type="submit" aria-label="Submit search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center">
+                <li class="nav-item px-2">
+                    <a class="nav-link text-white text-uppercase transition" href="{% url 'shop:home' %}">HOME</a>
+                </li>
+                <li class="nav-item px-2">
+                    <a class="nav-link text-white text-uppercase transition" href="{% url 'shop:catalog' %}">CATALOG</a>
+                </li>
+                <li class="nav-item px-2">
+                    <a class="nav-link text-white text-uppercase transition" href="{% url 'shop:builder' %}">PC BUILDER</a>
+                </li>
+                <li class="nav-item px-2">
+                    <a class="nav-link text-white text-uppercase transition" href="{% url 'shop:feedback' %}">FEEDBACK</a>
+                </li>
+            </ul>
+
+            <!-- Navigation Controls -->
+            <div class="d-flex align-items-center gap-3">
+                <!-- Search Icon with quick modal input -->
+                <form class="d-none d-lg-flex position-relative align-items-center" action="{% url 'shop:catalog' %}" method="GET" role="search">
+                    <input class="form-control form-glass bg-transparent border-secondary text-white py-1 px-3 pe-5" type="search" placeholder="Search specs..." aria-label="Search products" name="q" value="{{ search_query|default:'' }}" style="width: 200px; font-size: 0.9rem;">
+                    <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-secondary border-0 p-0 pe-3 transition" type="submit" aria-label="Submit search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+
+                <!-- Shopping Cart Icon -->
+                <a href="{% url 'shop:cart' %}" class="position-relative text-white fs-5 px-2 py-1 transition" id="nav-cart-icon" aria-label="Shopping cart">
+                    <i class="bi bi-cart3 text-info" style="filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.3));"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-pink cart-badge" style="font-size: 0.65rem; padding: 4px 6px;">2</span>
+                </a>
+
+                <!-- User Dropdown Menu -->
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-white transition" id="userMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
+                        <div class="rounded-circle border border-info p-1 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: rgba(0,229,255,0.1);">
+                            <i class="bi bi-person-fill text-info" style="font-size: 0.95rem;"></i>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end border-cyan shadow-lg mt-2 p-2 glass-panel" aria-labelledby="userMenuDropdown" style="background: rgba(21, 21, 29, 0.95); border-color: var(--accent-blue) !important; width: 220px;">
+                        {% if user.is_authenticated %}
+                            <li>
+                                <div class="px-3 py-2 border-bottom border-secondary mb-2">
+                                    <span class="d-block text-white fw-bold font-subheading text-uppercase" style="font-size: 0.9rem;">{{ user.username }}</span>
+                                    {% if user.email %}
+                                        <small class="text-muted" style="font-size: 0.75rem;">{{ user.email }}</small>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item text-white py-2 rounded font-subheading transition" href="{% url 'shop:dashboard' %}"><i class="bi bi-speedometer2 text-info me-2"></i> NEURAL DASHBOARD</a></li>
+                            <li><a class="dropdown-item text-white py-2 rounded font-subheading transition" href="{% url 'shop:dashboard' %}#saved-rigs"><i class="bi bi-cpu text-info me-2"></i> SAVED DESIGNS</a></li>
+                            <li><a class="dropdown-item text-white py-2 rounded font-subheading transition" href="{% url 'shop:cart' %}"><i class="bi bi-cart-fill text-info me-2"></i> ACTIVE CART</a></li>
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li><a class="dropdown-item text-danger py-2 rounded font-subheading transition" href="{% url 'accounts:logout' %}"><i class="bi bi-power me-2"></i> DISCONNECT Node</a></li>
+                        {% else %}
+                            <li>
+                                <div class="px-3 py-2 border-bottom border-secondary mb-2 text-center">
+                                    <span class="d-block text-secondary font-subheading" style="font-size: 0.8rem;">GUEST OPERATIVE</span>
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item text-white py-2 rounded font-subheading transition" href="{% url 'accounts:login' %}"><i class="bi bi-shield-lock-fill text-info me-2"></i> CONNECT NODE</a></li>
+                            <li><a class="dropdown-item text-white py-2 rounded font-subheading transition" href="{% url 'accounts:register' %}"><i class="bi bi-cpu-fill text-pink me-2"></i> INITIALIZE NODE</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

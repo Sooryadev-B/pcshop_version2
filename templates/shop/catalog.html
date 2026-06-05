@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Summary Block -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between g-3 mb-4 pb-3 border-bottom border-secondary">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 text-uppercase font-subheading" style="font-size: 0.8rem;">
+                    <li class="breadcrumb-item"><a href="{% url 'shop:home' %}" class="text-secondary text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active text-info" aria-current="page">Catalog</li>
+                </ol>
+            </nav>
+            <h2 class="font-heading text-white fw-bold mb-0">High-Performance Hardware</h2>
+        </div>
+        <div class="text-secondary font-subheading">
+            FOUND <span class="text-pink fw-bold">{{ products|length }}</span> HARDWARE UNITS
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- 1. ADVANCED FILTER SIDEBAR -->
+        <div class="col-lg-3">
+            <div class="glass-panel p-4 sticky-sidebar border-secondary">
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom border-secondary">
+                    <h5 class="font-heading text-white mb-0" style="font-size: 1rem;"><i class="bi bi-funnel-fill text-info me-2"></i>Filters</h5>
+                    <a href="{% url 'shop:catalog' %}" class="text-decoration-none text-pink font-subheading" style="font-size: 0.85rem;">RESET ALL</a>
+                </div>
+
+                <!-- Search override within sidebar -->
+                <form action="{% url 'shop:catalog' %}" method="GET" class="mb-4">
+                    <input type="hidden" name="category" value="{{ selected_category }}">
+                    <label class="form-label text-muted font-subheading mb-1" style="font-size: 0.75rem;">NEURAL SEARCH</label>
+                    <div class="position-relative">
+                        <input type="text" class="form-control form-glass text-white bg-transparent" placeholder="Search parameters..." name="q" value="{{ search_query }}">
+                        <button type="submit" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-secondary pe-3 border-0 py-0"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+
+                <!-- Categories -->
+                <div class="mb-4">
+                    <label class="form-label text-muted font-subheading mb-2" style="font-size: 0.75rem;">HARDWARE CATEGORY</label>
+                    <div class="d-flex flex-column gap-2">
+                        {% for cat in categories %}
+                        <a href="{% url 'shop:catalog' %}?category={{ cat.id }}{% if search_query %}&q={{ search_query }}{% endif %}" 
+                           class="d-flex justify-content-between align-items-center py-2 px-3 rounded text-decoration-none font-subheading border transition 
+                           {% if selected_category == cat.id %}bg-cyan text-dark border-cyan fw-bold{% else %}bg-transparent text-white border-secondary text-hover-info{% endif %}" 
+                           style="font-size: 0.9rem;">
+                            <span>{{ cat.name }}</span>
+                            <span class="badge rounded-pill {% if selected_category == cat.id %}bg-dark text-cyan{% else %}bg-secondary text-white{% endif %}" style="font-size: 0.7rem;">{{ cat.count }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Price Slider (Mock Interaction) -->
+                <div class="mb-4">
+                    <label class="form-label text-muted font-subheading mb-2" style="font-size: 0.75rem;">BUDGET CAP ($)</label>
+                    <div class="d-flex justify-content-between mb-2 font-subheading" style="font-size: 0.85rem;">
+                        <span class="text-secondary">$0</span>
+                        <span class="text-pink fw-bold" id="price-slider-indicator">$6,000</span>
+                    </div>
+                    <input type="range" class="form-range" min="100" max="6000" step="100" value="6000" id="catalog-price-slider" oninput="document.getElementById('price-slider-indicator').textContent = '$' + parseInt(this.value).toLocaleString()">
+                </div>
+
+                <!-- Stock Toggle -->
+                <div class="mb-4">
+                    <label class="form-label text-muted font-subheading mb-2" style="font-size: 0.75rem;">AVAILABILITY STATUS</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input bg-transparent border-secondary" type="checkbox" role="switch" id="stockSwitch" checked>
+                        <label class="form-check-label text-white font-subheading" for="stockSwitch" style="font-size: 0.9rem;">Hide Out of Stock</label>
+                    </div>
+                </div>
+
+                <!-- Badges Filter -->
+                <div>
+                    <label class="form-label text-muted font-subheading mb-2" style="font-size: 0.75rem;">SPECIAL SHARDS</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" id="badge-flagship" class="custom-checkbox-btn">
+                        <label for="badge-flagship" class="custom-checkbox-label font-subheading" style="font-size: 0.8rem;">FLAGSHIP</label>
+                        
+                        <input type="checkbox" id="badge-popular" class="custom-checkbox-btn">
+                        <label for="badge-popular" class="custom-checkbox-label font-subheading" style="font-size: 0.8rem;">POPULAR</label>
+                        
+                        <input type="checkbox" id="badge-new" class="custom-checkbox-btn">
+                        <label for="badge-new" class="custom-checkbox-label font-subheading" style="font-size: 0.8rem;">NEW</label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 2. PRODUCT CARDS GRID -->
+        <div class="col-lg-9">
+            <!-- Grid controls / sorters -->
+            <div class="glass-panel p-3 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3 border-secondary">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-secondary font-subheading" style="font-size: 0.85rem;">SORT BY:</span>
+                    <select class="form-select form-glass bg-transparent text-white border-0 py-1" style="width: 160px; font-size: 0.85rem; font-family: 'Inter', sans-serif; letter-spacing: 0;" id="catalog-sort-select">
+                        <option value="popular" class="bg-dark">Popularity</option>
+                        <option value="price-asc" class="bg-dark">Price: Low to High</option>
+                        <option value="price-desc" class="bg-dark">Price: High to Low</option>
+                        <option value="rating" class="bg-dark">Rating Coefficient</option>
+                    </select>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-outline-info active" title="Grid View" id="grid-view-btn"><i class="bi bi-grid-3x3-gap"></i></button>
+                    <button class="btn btn-sm btn-outline-info" title="List View" id="list-view-btn"><i class="bi bi-list-task"></i></button>
+                </div>
+            </div>
+
+            <!-- Active search tags if query exists -->
+            {% if search_query or selected_category != 'all' %}
+            <div class="mb-4 d-flex flex-wrap gap-2 align-items-center">
+                <span class="text-secondary font-subheading" style="font-size: 0.85rem;">ACTIVE FILTERS:</span>
+                {% if selected_category != 'all' %}
+                <span class="badge bg-secondary text-white px-3 py-2 font-subheading d-flex align-items-center gap-2">
+                    CATEGORY: {{ selected_category|upper }} 
+                    <a href="{% url 'shop:catalog' %}?category=all{% if search_query %}&q={{ search_query }}{% endif %}" class="text-decoration-none text-danger fw-bold"><i class="bi bi-x-circle-fill"></i></a>
+                </span>
+                {% endif %}
+                {% if search_query %}
+                <span class="badge bg-secondary text-white px-3 py-2 font-subheading d-flex align-items-center gap-2">
+                    QUERY: "{{ search_query }}" 
+                    <a href="{% url 'shop:catalog' %}?category={{ selected_category }}" class="text-decoration-none text-danger fw-bold"><i class="bi bi-x-circle-fill"></i></a>
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Products List Layout -->
+            <div class="row g-4" id="products-catalog-grid">
+                {% for product in products %}
+                <div class="col-md-6 col-xl-4 product-card-col" data-product-price="{{ product.price }}" data-product-stock="{% if product.in_stock %}1{% else %}0{% endif %}">
+                    {% include 'partials/product_card.html' with product=product %}
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5 glass-panel border-secondary">
+                    <i class="bi bi-search-heart fs-1 text-muted d-block mb-3"></i>
+                    <h4 class="font-heading">NO COMPONENT PATHS FOUND</h4>
+                    <p class="text-gray mb-0">Try adjusting your filtration criteria or refining search tags.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Javascript mapping catalog sorting and grids toggling -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const sortSelect = document.getElementById('catalog-sort-select');
+        const gridBtn = document.getElementById('grid-view-btn');
+        const listBtn = document.getElementById('list-view-btn');
+        const gridContainer = document.getElementById('products-catalog-grid');
+        const stockSwitch = document.getElementById('stockSwitch');
+        
+        if (sortSelect) {
+            sortSelect.addEventListener('change', () => {
+                sortProducts(sortSelect.value);
+            });
+        }
+        
+        if (gridBtn && listBtn) {
+            gridBtn.addEventListener('click', () => {
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+                toggleGridView(true);
+            });
+            listBtn.addEventListener('click', () => {
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+                toggleGridView(false);
+            });
+        }
+
+        if (stockSwitch) {
+            stockSwitch.addEventListener('change', () => {
+                filterStock(stockSwitch.checked);
+            });
+        }
+    });
+
+    function sortProducts(criteria) {
+        const grid = document.getElementById('products-catalog-grid');
+        const cards = Array.from(grid.querySelectorAll('.product-card-col'));
+        
+        cards.sort((a, b) => {
+            const priceA = parseFloat(a.dataset.productPrice);
+            const priceB = parseFloat(b.dataset.productPrice);
+            
+            if (criteria === 'price-asc') {
+                return priceA - priceB;
+            } else if (criteria === 'price-desc') {
+                return priceB - priceA;
+            }
+            return 0; // Maintain order for other mock styles
+        });
+        
+        grid.innerHTML = '';
+        cards.forEach(card => grid.appendChild(card));
+    }
+
+    function toggleGridView(isGrid) {
+        const cols = document.querySelectorAll('.product-card-col');
+        cols.forEach(col => {
+            if (isGrid) {
+                col.className = 'col-md-6 col-xl-4 product-card-col';
+            } else {
+                col.className = 'col-12 product-card-col mb-3';
+            }
+        });
+    }
+
+    function filterStock(hideOut) {
+        const cols = document.querySelectorAll('.product-card-col');
+        cols.forEach(col => {
+            const isStock = col.dataset.productStock === '1';
+            if (hideOut && !isStock) {
+                col.classList.add('d-none');
+            } else {
+                col.classList.remove('d-none');
+            }
+        });
+    }
+</script>
+
+<style>
+    .bg-cyan {
+        background-color: var(--accent-blue) !important;
+    }
+    .text-dark {
+        color: #0b0b0f !important;
+    }
+    .border-cyan {
+        border-color: var(--accent-blue) !important;
+    }
+</style>
+{% endblock %}

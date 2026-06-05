@@ -1,0 +1,157 @@
+{% extends 'portal/base_admin.html' %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-3 border-bottom border-secondary">
+    <h2 class="font-heading text-white fw-bold mb-0"><i class="bi bi-star text-info me-2"></i>Reviews Control Station</h2>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Status Filter -->
+        <div class="btn-group font-subheading">
+            <a href="?status=all&category={{ selected_category }}&source={{ selected_source }}" class="btn btn-sm {% if status == 'all' %}btn-info{% else %}btn-outline-secondary{% endif %}">All Status</a>
+            <a href="?status=pending&category={{ selected_category }}&source={{ selected_source }}" class="btn btn-sm {% if status == 'pending' %}btn-warning{% else %}btn-outline-secondary{% endif %}">Pending</a>
+            <a href="?status=approved&category={{ selected_category }}&source={{ selected_source }}" class="btn btn-sm {% if status == 'approved' %}btn-success{% else %}btn-outline-secondary{% endif %}">Approved</a>
+        </div>
+    </div>
+</div>
+
+<!-- 1. CATEGORIZED TELEMETRY STATS BREAKDOWN -->
+<div class="row g-4 mb-4">
+    <!-- Category Breakdown Card -->
+    <div class="col-lg-8">
+        <div class="glass-panel p-4 border-secondary h-100">
+            <h5 class="font-heading text-white mb-3"><i class="bi bi-tags-fill text-info me-2"></i>Review Category Statistics</h5>
+            <div class="row g-3">
+                {% for stat in category_stats %}
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between align-items-center mb-1 font-subheading" style="font-size: 0.8rem;">
+                        <span class="text-white">{{ stat.name }}</span>
+                        <span class="text-info">{{ stat.count }} logs ({{ stat.percentage }}%)</span>
+                    </div>
+                    <div class="progress bg-dark" style="height: 6px;">
+                        <div class="progress-bar {% if stat.slug == 'performance' %}bg-info{% elif stat.slug == 'build' %}bg-primary{% elif stat.slug == 'value' %}bg-success{% elif stat.slug == 'shipping' %}bg-warning{% elif stat.slug == 'support' %}bg-danger{% else %}bg-secondary{% endif %}" role="progressbar" style="width: {{ stat.percentage }}%" aria-valuenow="{{ stat.count }}" aria-valuemin="0" aria-valuemax="{{ total_reviews }}"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Source Breakdown Card -->
+    <div class="col-lg-4">
+        <div class="glass-panel p-4 border-secondary h-100">
+            <h5 class="font-heading text-white mb-3"><i class="bi bi-broadcast-pin text-pink me-2"></i>Review Source Logs</h5>
+            <div class="d-flex flex-column gap-3">
+                {% for stat in source_stats %}
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-1 font-subheading" style="font-size: 0.8rem;">
+                        <span class="text-white"><i class="bi {% if stat.slug == 'storefront' %}bi-display text-info{% else %}bi-shield-check text-purple{% endif %} me-2"></i>{{ stat.name }}</span>
+                        <span class="text-pink fw-bold">{{ stat.count }} ({{ stat.percentage }}%)</span>
+                    </div>
+                    <div class="progress bg-dark" style="height: 6px;">
+                        <div class="progress-bar {% if stat.slug == 'storefront' %}bg-info{% else %}bg-purple{% endif %}" role="progressbar" style="width: {{ stat.percentage }}%" aria-valuenow="{{ stat.count }}" aria-valuemin="0" aria-valuemax="{{ total_reviews }}"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. FILTERING CONTROL PANEL -->
+<div class="glass-panel p-3 border-secondary mb-4">
+    <form method="get" class="row g-2 align-items-center font-subheading">
+        <input type="hidden" name="status" value="{{ status }}">
+        
+        <div class="col-md-4 col-sm-6">
+            <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">FILTER BY CATEGORY</label>
+            <select name="category" class="form-select form-glass bg-dark border-secondary text-white" onchange="this.form.submit()">
+                <option value="all" {% if selected_category == 'all' %}selected{% endif %}>-- All Categories --</option>
+                {% for slug, name in categories %}
+                <option value="{{ slug }}" {% if selected_category == slug %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="col-md-4 col-sm-6">
+            <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">FILTER BY ORIGIN / SOURCE</label>
+            <select name="source" class="form-select form-glass bg-dark border-secondary text-white" onchange="this.form.submit()">
+                <option value="all" {% if selected_source == 'all' %}selected{% endif %}>-- All Origins --</option>
+                {% for slug, name in sources %}
+                <option value="{{ slug }}" {% if selected_source == slug %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 col-sm-12 d-flex align-items-end justify-content-md-end mt-sm-3 mt-md-0">
+            <a href="?status=all" class="btn btn-outline-secondary w-100 w-md-auto"><i class="bi bi-x-circle me-1"></i>Reset filters</a>
+        </div>
+    </form>
+</div>
+
+<!-- 3. REVIEW TABLE -->
+<div class="glass-panel p-0 border-secondary overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0 align-middle" style="--bs-table-bg: transparent; font-size: 0.85rem;">
+            <thead>
+                <tr class="font-subheading text-secondary border-secondary">
+                    <th class="ps-4">TITLE / CONTENT</th>
+                    <th>PRODUCT</th>
+                    <th>AUTHOR</th>
+                    <th>CATEGORY</th>
+                    <th>SOURCE</th>
+                    <th class="text-center">RATING</th>
+                    <th class="text-center">STATUS</th>
+                    <th>DATE</th>
+                    <th class="text-end pe-4">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                <tr class="border-secondary" style="border-color: rgba(255,255,255,0.04)!important;">
+                    <td class="ps-4" style="max-width: 300px;">
+                        <span class="text-white fw-bold">{{ review.title }}</span>
+                        <br><small class="text-muted d-block text-truncate" style="max-width: 280px;" title="{{ review.content }}">{{ review.content }}</small>
+                    </td>
+                    <td class="text-muted font-subheading">{{ review.product.name|truncatechars:20 }}</td>
+                    <td class="text-white">{{ review.author_name }}</td>
+                    <td>
+                        <span class="badge {% if review.category == 'performance' %}bg-info text-dark{% elif review.category == 'build' %}bg-primary text-white{% elif review.category == 'value' %}bg-success text-dark{% elif review.category == 'shipping' %}bg-warning text-dark{% elif review.category == 'support' %}bg-danger text-white{% else %}bg-secondary text-white{% endif %} text-uppercase font-subheading" style="font-size: 0.65rem;">
+                            {{ review.get_category_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if review.source == 'storefront' %}bg-info text-dark{% else %}bg-purple text-white{% endif %} font-subheading" style="font-size: 0.65rem;">
+                            {% if review.source == 'storefront' %}
+                            <i class="bi bi-display me-1"></i>Storefront
+                            {% else %}
+                            <i class="bi bi-shield-check me-1"></i>Admin
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td class="text-center text-warning fw-bold"><i class="bi bi-star-fill"></i> {{ review.rating }}</td>
+                    <td class="text-center">
+                        {% if review.is_approved %}
+                        <span class="badge bg-success text-dark">Approved</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted">{{ review.created_at|date:"M d, Y" }}</td>
+                    <td class="text-end pe-4">
+                        <form method="post" action="{% url 'portal:review_toggle' review.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-{% if review.is_approved %}warning{% else %}success{% endif %}" title="Toggle approval">
+                                <i class="bi bi-{% if review.is_approved %}x-circle{% else %}check-circle{% endif %}"></i>
+                            </button>
+                        </form>
+                        <a href="{% url 'portal:review_edit' review.pk %}" class="btn btn-sm btn-outline-info"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'portal:review_delete' review.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9" class="text-center text-muted py-5">No reviews found matching the active filters.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

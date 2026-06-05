@@ -1,0 +1,78 @@
+{% load static %}
+<div class="rgb-card h-100">
+    <div class="rgb-card-inner d-flex flex-column justify-content-between">
+        
+        <!-- Badge & Image Container -->
+        <div class="position-relative mb-3 text-center overflow-hidden rounded" style="background: rgba(255,255,255,0.02); height: 200px; display: flex; align-items: center; justify-content: center;">
+            
+            {% if product.badge %}
+            <span class="position-absolute top-0 start-0 m-2 badge-cyber 
+                {% if product.badge == 'FLAGSHIP' %}badge-cyber-pink{% elif product.badge == 'POPULAR' %}badge-cyber-purple{% endif %}">
+                {{ product.badge }}
+            </span>
+            {% endif %}
+            
+            <!-- Dynamic Image or Fallback -->
+            <img src="/static/img/{{ product.image }}.webp" 
+                 alt="{{ product.name }}" 
+                 class="img-fluid animated-float" 
+                 style="max-height: 160px; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));"
+                 onerror="this.onerror=null; this.src='https://placehold.co/400x300/15151d/ffffff/png?text={{ product.name|urlencode }}';">
+        </div>
+
+        <!-- Meta Content -->
+        <div class="mb-3">
+            <div class="d-flex align-items-center gap-1 mb-1 star-rating" style="font-size: 0.8rem;">
+                <i class="bi bi-star-fill text-warning"></i>
+                <span class="text-white fw-bold">{{ product.rating }}</span>
+                <span class="text-muted">({{ product.reviews_count }})</span>
+            </div>
+            
+            <a href="{% url 'shop:product_detail' slug=product.slug %}" class="text-decoration-none text-white">
+                <h5 class="font-heading my-1 text-hover-info" style="font-size: 1rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8rem;">
+                    {{ product.name }}
+                </h5>
+            </a>
+            
+            <!-- Quick Hardware Specifications -->
+            <div class="my-2 pt-2 border-top border-secondary" style="font-size: 0.75rem; line-height: 1.5; color: var(--text-gray);">
+                <div class="d-flex align-items-center mb-1 text-truncate">
+                    <i class="bi bi-cpu text-info me-2" style="font-size: 0.85rem;"></i>
+                    <span class="text-truncate">{{ product.cpu }}</span>
+                </div>
+                <div class="d-flex align-items-center text-truncate">
+                    <i class="bi bi-gpu-card text-pink me-2" style="font-size: 0.85rem;"></i>
+                    <span class="text-truncate">{{ product.gpu }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing and Action Drawer -->
+        <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top border-secondary">
+            <div>
+                {% if product.old_price %}
+                <span class="text-muted text-decoration-line-through d-block" style="font-size: 0.75rem;">${{ product.old_price|floatformat:2 }}</span>
+                {% endif %}
+                <span class="font-heading text-pink fw-bold" style="font-size: 1.15rem;">${{ product.price|floatformat:2 }}</span>
+            </div>
+            
+            <div>
+                {% if product.in_stock %}
+                <button type="button" class="btn btn-sm btn-cyber btn-quick-buy px-3" data-product-name="{{ product.name }}">
+                    <i class="bi bi-cart-plus"></i> BUY
+                </button>
+                {% else %}
+                <span class="badge bg-danger text-light px-2 py-1" style="font-size: 0.75rem;">OUT OF STOCK</span>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .text-hover-info:hover {
+        color: var(--accent-blue) !important;
+        transition: color 0.2s ease;
+    }
+</style>
