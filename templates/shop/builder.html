@@ -72,6 +72,7 @@
                 <!-- Parts Listing loops (swapped via JS) -->
                 {% for category, items_list in parts.items %}
                 <div class="builder-parts-group {% if not forloop.first %}d-none{% endif %}" id="parts-{{ category }}">
+                    {% if items_list %}
                     <div class="row g-3">
                         {% for item in items_list %}
                         <div class="col-12">
@@ -116,6 +117,18 @@
                         </div>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted font-subheading">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        No parts in this category yet. Add products via the admin portal and assign a builder slot.
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="text-center py-5">
+                    <i class="bi bi-cpu text-info fs-1 mb-3 d-block"></i>
+                    <h5 class="font-heading text-white">No builder parts loaded</h5>
+                    <p class="text-muted font-subheading">Mark products as PC Builder parts in the admin portal.</p>
                 </div>
                 {% endfor %}
 

@@ -5,8 +5,8 @@ from django.contrib import messages
 from django.db.models import Count, Q
 from django.conf import settings
 
-from shop.models import Product, Category, Review, Feedback
-from .forms import ProductForm, UserEditForm, ReviewForm, FeedbackStatusForm
+from shop.models import Product, Category, Review, Feedback, Deal
+from .forms import ProductForm, DealForm, UserEditForm, ReviewForm, FeedbackStatusForm
 from .decorators import staff_required
 
 
@@ -44,6 +44,8 @@ def dashboard(request):
         'feedback_count': Feedback.objects.count(),
         'new_feedback': Feedback.objects.filter(status='new').count(),
         'low_stock': Product.objects.filter(stock__lte=5, in_stock=True).count(),
+        'deal_count': Deal.objects.count(),
+        'builder_parts': Product.objects.filter(is_builder_part=True).count(),
         'recent_reviews': Review.objects.select_related('product')[:5],
         'recent_feedback': Feedback.objects.all()[:5],
         'recent_products': Product.objects.select_related('category').order_by('-updated_at')[:5],
@@ -110,6 +112,68 @@ def product_edit(request, pk):
         'form': form,
         'product': product,
         'is_edit': True,
+    })
+
+
+@staff_required
+def deal_list(request):
+    deals = Deal.objects.prefetch_related('products').all()
+    return render(request, 'portal/deals/list.html', {
+        'title': 'Deals | Overclock Admin Portal',
+        'deals': deals,
+    })
+
+
+@staff_required
+def deal_add(request):
+    if request.method == 'POST':
+        form = DealForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Deal created successfully.')
+            return redirect('portal:deal_list')
+    else:
+        form = DealForm()
+
+    return render(request, 'portal/deals/form.html', {
+        'title': 'Add Deal | Overclock Admin Portal',
+        'form': form,
+        'is_edit': False,
+    })
+
+
+@staff_required
+def deal_edit(request, pk):
+    deal = get_object_or_404(Deal, pk=pk)
+    if request.method == 'POST':
+        form = DealForm(request.POST, instance=deal)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'"{deal.title}" updated successfully.')
+            return redirect('portal:deal_list')
+    else:
+        form = DealForm(instance=deal)
+
+    return render(request, 'portal/deals/form.html', {
+        'title': f'Edit {deal.title} | Overclock Admin Portal',
+        'form': form,
+        'deal': deal,
+        'is_edit': True,
+    })
+
+
+@staff_required
+def deal_delete(request, pk):
+    deal = get_object_or_404(Deal, pk=pk)
+    if request.method == 'POST':
+        title = deal.title
+        deal.delete()
+        messages.success(request, f'"{title}" deleted.')
+        return redirect('portal:deal_list')
+
+    return render(request, 'portal/deals/delete.html', {
+        'title': f'Delete {deal.title} | Overclock Admin Portal',
+        'deal': deal,
     })
 
 

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.utils.text import slugify
 
 
@@ -20,9 +21,28 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    COMPONENT_TYPES = [
+        ('', 'Not a builder part'),
+        ('cpu', 'Processor (CPU)'),
+        ('mobo', 'Motherboard'),
+        ('gpu', 'Graphics Card (GPU)'),
+        ('ram', 'System Memory (RAM)'),
+        ('storage', 'Storage (SSD)'),
+        ('psu', 'Power Supply (PSU)'),
+        ('cooler', 'CPU Cooler'),
+        ('case', 'Chassis Case'),
+    ]
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    component_type = models.CharField(
+        max_length=20, choices=COMPONENT_TYPES, blank=True, default='',
+        help_text='PC Builder slot — only used when "Show in PC Builder" is enabled',
+    )
+    is_builder_part = models.BooleanField(default=False, help_text='Include this product in the PC Builder')
+    wattage = models.PositiveIntegerField(default=0, help_text='Power draw in watts (PSU = total capacity)')
+    socket = models.CharField(max_length=50, blank=True, help_text='CPU/Motherboard socket, e.g. AM5, LGA1700')
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     old_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -55,6 +75,45 @@ class Product(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    @property
+    def discount_percent(self):
+        if self.old_price and self.old_price > self.price:
+            return int((1 - float(self.price) / float(self.old_price)) * 100)
+        return 0
+
+    @property
+    def is_on_sale(self):
+        return bool(self.old_price and self.old_price > self.price)
+
+
+class Deal(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True)
+    discount_label = models.CharField(max_length=50, blank=True, help_text='e.g. 15% OFF')
+    badge = models.CharField(max_length=50, blank=True, help_text='e.g. FLASH SALE')
+    starts_at = models.DateTimeField()
+    ends_at = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    products = models.ManyToManyField(Product, related_name='deals', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-starts_at']
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    @property
+    def is_current(self):
+        now = timezone.now()
+        return self.is_active and self.starts_at <= now <= self.ends_at
 
 
 class Review(models.Model):

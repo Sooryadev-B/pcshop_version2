@@ -65,9 +65,13 @@ function initCountdownTimer() {
     const countdownEl = document.getElementById('deal-countdown');
     if (!countdownEl) return;
 
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + 2);
-    targetDate.setHours(targetDate.getHours() + 4);
+    const endDateAttr = countdownEl.dataset.endDate;
+    const targetDate = endDateAttr ? new Date(endDateAttr) : (() => {
+        const fallback = new Date();
+        fallback.setDate(fallback.getDate() + 2);
+        fallback.setHours(fallback.getHours() + 4);
+        return fallback;
+    })();
 
     const updateTimer = () => {
         const now = new Date().getTime();
