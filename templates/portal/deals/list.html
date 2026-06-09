@@ -1,0 +1,55 @@
+{% extends 'portal/base_admin.html' %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-3 border-bottom border-secondary">
+    <h2 class="font-heading text-white fw-bold mb-0"><i class="bi bi-tag text-pink me-2"></i>Deals & Promotions</h2>
+    <a href="{% url 'portal:deal_add' %}" class="btn btn-cyber btn-cyber-pink font-subheading py-2 px-3">
+        <i class="bi bi-plus-lg me-1"></i> ADD DEAL
+    </a>
+</div>
+
+<div class="glass-panel p-0 border-secondary overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0 align-middle" style="--bs-table-bg: transparent; font-size: 0.85rem;">
+            <thead>
+                <tr class="font-subheading text-secondary border-secondary">
+                    <th class="ps-4">DEAL</th>
+                    <th>DISCOUNT</th>
+                    <th>PRODUCTS</th>
+                    <th>ENDS</th>
+                    <th class="text-center">STATUS</th>
+                    <th class="text-end pe-4">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for deal in deals %}
+                <tr class="border-secondary">
+                    <td class="ps-4">
+                        <span class="text-white fw-bold">{{ deal.title }}</span>
+                        {% if deal.badge %}<span class="badge bg-dark text-pink border border-pink ms-1" style="font-size: 0.65rem;">{{ deal.badge }}</span>{% endif %}
+                    </td>
+                    <td class="text-pink font-heading">{{ deal.discount_label|default:"—" }}</td>
+                    <td class="text-muted font-subheading">{{ deal.products.count }} product{{ deal.products.count|pluralize }}</td>
+                    <td class="text-muted font-subheading">{{ deal.ends_at|date:"M j, Y" }}</td>
+                    <td class="text-center">
+                        {% if deal.is_current %}
+                        <span class="badge bg-success text-dark">Live</span>
+                        {% elif deal.is_active %}
+                        <span class="badge bg-warning text-dark">Scheduled</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-4">
+                        <a href="{% url 'portal:deal_edit' deal.pk %}" class="btn btn-sm btn-outline-info me-1"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'portal:deal_delete' deal.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-5 font-subheading">No deals yet. Create your first promotion.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

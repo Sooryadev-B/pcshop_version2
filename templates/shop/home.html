@@ -14,8 +14,35 @@
             Premium custom liquid loop gaming desktops, elite GPUs, and RGB enthusiast setups engineered for dominance.
         </p>
         <a href="{% url 'shop:catalog' %}" class="btn btn-cyber btn-cyber-pink px-5 py-3 font-heading me-3">EXPLORE CATALOG</a>
+        <a href="{% url 'shop:deals' %}" class="btn btn-cyber btn-cyber-purple px-5 py-3 font-heading me-3">VIEW DEALS</a>
         <a href="{% url 'shop:builder' %}" class="btn btn-outline-light px-5 py-3 font-heading">BUILD YOUR RIG</a>
     </div>
+
+    {% if spotlight_deal %}
+    <div class="glass-panel border-pink p-4 mb-5 text-center">
+        {% if spotlight_deal.badge %}
+        <span class="badge-cyber badge-cyber-pink mb-2 d-inline-block">{{ spotlight_deal.badge }}</span>
+        {% endif %}
+        <h2 class="font-heading text-white mb-2">{{ spotlight_deal.title }}</h2>
+        <p class="text-muted mb-3">{{ spotlight_deal.discount_label }}</p>
+        <div id="deal-countdown" data-end-date="{{ spotlight_deal.ends_at|date:'c' }}"></div>
+        <a href="{% url 'shop:deals' %}" class="btn btn-cyber btn-cyber-pink mt-3 font-heading">SHOP ALL DEALS</a>
+    </div>
+    {% endif %}
+
+    {% if deal_products %}
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="font-heading text-white mb-0">HOT <span class="text-pink">DEALS</span></h2>
+        <a href="{% url 'shop:deals' %}" class="text-info font-subheading text-decoration-none">VIEW ALL <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row g-4 mb-5">
+        {% for product in deal_products %}
+        <div class="col-md-6 col-xl-3">
+            {% include 'partials/product_card.html' with product=product %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- Featured Products -->
     {% if featured_products %}

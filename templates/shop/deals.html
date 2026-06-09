@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Deals & Promotions | Overclock PC Shop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-3 text-uppercase font-subheading" style="font-size: 0.8rem;">
+                <li class="breadcrumb-item"><a href="{% url 'shop:home' %}" class="text-secondary text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active text-pink" aria-current="page">Deals</li>
+            </ol>
+        </nav>
+        <h1 class="font-heading text-white fw-bold display-5 mb-3">
+            FLASH <span class="text-pink">DEALS</span> & PROMOTIONS
+        </h1>
+        <p class="text-muted font-subheading mx-auto" style="max-width: 600px;">
+            Limited-time price drops on premium hardware. Grab these deals before the countdown hits zero.
+        </p>
+    </div>
+
+    {% if spotlight_deal %}
+    <div class="glass-panel border-pink p-4 p-md-5 mb-5 text-center position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 w-100" style="height: 3px; background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple), var(--accent-blue));"></div>
+        {% if spotlight_deal.badge %}
+        <span class="badge-cyber badge-cyber-pink mb-3 d-inline-block">{{ spotlight_deal.badge }}</span>
+        {% endif %}
+        <h2 class="font-heading text-white mb-2">{{ spotlight_deal.title }}</h2>
+        <p class="text-muted mb-3">{{ spotlight_deal.description }}</p>
+        {% if spotlight_deal.discount_label %}
+        <p class="font-heading text-pink fs-4 mb-4">{{ spotlight_deal.discount_label }}</p>
+        {% endif %}
+        <div id="deal-countdown" data-end-date="{{ spotlight_deal.ends_at|date:'c' }}"></div>
+    </div>
+    {% endif %}
+
+    {% if active_deals %}
+    <h2 class="font-heading text-white mb-4">ACTIVE <span class="text-info">CAMPAIGNS</span></h2>
+    <div class="row g-4 mb-5">
+        {% for deal in active_deals %}
+        <div class="col-md-6 col-xl-4">
+            <div class="glass-panel border-secondary h-100 p-4 d-flex flex-column">
+                {% if deal.badge %}
+                <span class="badge-cyber badge-cyber-purple mb-3 align-self-start">{{ deal.badge }}</span>
+                {% endif %}
+                <h3 class="font-heading text-white mb-2" style="font-size: 1.1rem;">{{ deal.title }}</h3>
+                <p class="text-muted flex-grow-1" style="font-size: 0.9rem;">{{ deal.description }}</p>
+                {% if deal.discount_label %}
+                <p class="text-pink font-heading fw-bold mb-3">{{ deal.discount_label }}</p>
+                {% endif %}
+                <p class="text-secondary font-subheading mb-3" style="font-size: 0.8rem;">
+                    <i class="bi bi-clock text-info me-1"></i>
+                    Ends {{ deal.ends_at|date:"M j, Y g:i A" }}
+                </p>
+                {% if deal.products.all %}
+                <div class="row g-2">
+                    {% for product in deal.products.all|slice:":3" %}
+                    <div class="col-4">
+                        <a href="{% url 'shop:product_detail' slug=product.slug %}" class="text-decoration-none">
+                            <div class="rounded p-2 text-center" style="background: rgba(255,255,255,0.03);">
+                                <img src="/static/img/{{ product.image }}.webp"
+                                     alt="{{ product.name }}"
+                                     class="img-fluid"
+                                     style="max-height: 60px; object-fit: contain;"
+                                     onerror="this.onerror=null; this.src='https://placehold.co/120x80/15151d/ffffff/png?text=PC';">
+                                <small class="text-white d-block text-truncate mt-1" style="font-size: 0.65rem;">{{ product.name }}</small>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if on_sale_products %}
+    <h2 class="font-heading text-white mb-4">ON <span class="text-pink">SALE</span> NOW</h2>
+    <div class="row g-4">
+        {% for product in on_sale_products %}
+        <div class="col-md-6 col-xl-3">
+            <div class="position-relative">
+                {% if product.discount_percent %}
+                <span class="position-absolute top-0 end-0 m-2 badge bg-pink text-white fw-bold" style="z-index: 2; font-size: 0.75rem;">
+                    -{{ product.discount_percent }}%
+                </span>
+                {% endif %}
+                {% include 'partials/product_card.html' with product=product %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 glass-panel border-secondary">
+        <i class="bi bi-tag fs-1 text-muted d-block mb-3"></i>
+        <h4 class="font-heading text-white">NO ACTIVE DEALS RIGHT NOW</h4>
+        <p class="text-muted">Check back soon — new promotions drop regularly.</p>
+        <a href="{% url 'shop:catalog' %}" class="btn btn-cyber btn-cyber-pink mt-3">BROWSE CATALOG</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

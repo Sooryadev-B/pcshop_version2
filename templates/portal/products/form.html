@@ -12,8 +12,10 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row g-4">
-            <div class="col-md-8">
-                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;">CORE INFO</h5>
+            <div class="col-lg-8">
+                <!-- Catalog Category -->
+                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;"><i class="bi bi-grid text-info me-1"></i> CATALOG CATEGORY</h5>
+                <p class="text-muted font-subheading mb-3" style="font-size: 0.8rem;">Where this product appears in the shop catalog (e.g. GPUs, CPUs, Prebuilt).</p>
                 <div class="row g-3 mb-4">
                     <div class="col-md-8">
                         <label class="form-label text-secondary font-subheading">Name</label>
@@ -24,7 +26,7 @@
                         {{ form.slug }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label text-secondary font-subheading">Category</label>
+                        <label class="form-label text-secondary font-subheading">Shop Category</label>
                         {{ form.category }}
                     </div>
                     <div class="col-md-6">
@@ -37,7 +39,35 @@
                     </div>
                 </div>
 
-                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;">HARDWARE SPECS</h5>
+                <!-- PC Builder Section -->
+                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;"><i class="bi bi-cpu text-pink me-1"></i> PC BUILDER SECTION</h5>
+                <p class="text-muted font-subheading mb-3" style="font-size: 0.8rem;">Assign which builder step this part appears in. Enable only for individual components, not prebuilt PCs.</p>
+                <div class="glass-panel p-3 border-secondary mb-4">
+                    <div class="form-check mb-3">
+                        {{ form.is_builder_part }}
+                        <label class="form-check-label text-white font-subheading">Show in PC Builder</label>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary font-subheading">Builder Slot</label>
+                            {{ form.component_type }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary font-subheading">Wattage (W)</label>
+                            {{ form.wattage }}
+                            <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">PSU = total capacity; others = power draw</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary font-subheading">Socket</label>
+                            {{ form.socket }}
+                            <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">CPU &amp; Motherboard only</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Display Specs -->
+                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;"><i class="bi bi-motherboard text-info me-1"></i> DISPLAY SPECS</h5>
+                <p class="text-muted font-subheading mb-3" style="font-size: 0.8rem;">Shown on product cards and detail pages.</p>
                 <div class="row g-3 mb-4">
                     {% for field in form %}
                     {% if field.name in 'cpu,gpu,ram,storage,mobo,psu,cooler,case' %}
@@ -50,16 +80,20 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;">PRICING & INVENTORY</h5>
+            <div class="col-lg-4">
+                <!-- Pricing -->
+                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;"><i class="bi bi-currency-dollar text-pink me-1"></i> PRICING</h5>
                 <div class="mb-3">
-                    <label class="form-label text-secondary font-subheading">Price ($)</label>
+                    <label class="form-label text-secondary font-subheading">Current Price ($)</label>
                     {{ form.price }}
                 </div>
                 <div class="mb-3">
-                    <label class="form-label text-secondary font-subheading">Old Price ($)</label>
+                    <label class="form-label text-secondary font-subheading">Original Price ($)</label>
                     {{ form.old_price }}
+                    <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">Set higher than price to show a sale strikethrough</small>
                 </div>
+
+                <h5 class="font-heading text-white mb-3 mt-4" style="font-size: 0.85rem;"><i class="bi bi-box-seam text-info me-1"></i> INVENTORY</h5>
                 <div class="mb-3">
                     <label class="form-label text-secondary font-subheading">Stock</label>
                     {{ form.stock }}
@@ -69,7 +103,21 @@
                     <label class="form-check-label text-white font-subheading">In Stock</label>
                 </div>
 
-                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;">MEDIA</h5>
+                <!-- Deals -->
+                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;"><i class="bi bi-tag text-pink me-1"></i> DEALS</h5>
+                <p class="text-muted font-subheading mb-2" style="font-size: 0.75rem;">Add this product to promotional campaigns.</p>
+                <div class="glass-panel p-3 border-secondary mb-4" style="max-height: 180px; overflow-y: auto;">
+                    {% for checkbox in form.deals %}
+                    <div class="form-check mb-2">
+                        {{ checkbox.tag }}
+                        <label class="form-check-label text-white font-subheading" style="font-size: 0.85rem;" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted font-subheading mb-0" style="font-size: 0.8rem;">No deals yet. <a href="{% url 'portal:deal_add' %}" class="text-info">Create one</a></p>
+                    {% endfor %}
+                </div>
+
+                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;"><i class="bi bi-image text-info me-1"></i> MEDIA</h5>
                 <div class="mb-3">
                     <label class="form-label text-secondary font-subheading">Image Name</label>
                     {{ form.image }}
@@ -79,10 +127,10 @@
                     {{ form.image_upload }}
                 </div>
 
-                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;">DISPLAY</h5>
+                <h5 class="font-heading text-white mb-3" style="font-size: 0.85rem;"><i class="bi bi-eye text-info me-1"></i> HOMEPAGE</h5>
                 <div class="form-check mb-2">
                     {{ form.is_featured }}
-                    <label class="form-check-label text-white font-subheading">Featured on Homepage</label>
+                    <label class="form-check-label text-white font-subheading">Featured Section</label>
                 </div>
                 <div class="form-check mb-4">
                     {{ form.is_trending }}

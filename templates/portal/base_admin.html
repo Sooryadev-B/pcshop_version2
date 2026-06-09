@@ -45,6 +45,9 @@
                 <a href="{% url 'portal:product_list' %}" class="admin-nav-link {% if 'product' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-box-seam"></i> Products
                 </a>
+                <a href="{% url 'portal:deal_list' %}" class="admin-nav-link {% if 'deal' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="bi bi-tag"></i> Deals
+                </a>
                 <a href="{% url 'portal:user_list' %}" class="admin-nav-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-people"></i> Users
                 </a>
